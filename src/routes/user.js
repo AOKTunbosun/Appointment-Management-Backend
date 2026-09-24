@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {checkSchema, matchedData, validationResult} from 'express-validator';
+import passport from 'passport';
 
 import {registerUserSchema, loginUserSchema} from '../validation_schemas/user_schemas.js';
 
@@ -7,6 +8,8 @@ import { hashPassword } from '../utils/hashing.js';
 
 import {users} from '../db/schema/users.js';
 import {db} from '../db/index.js';
+
+import { checkAuthStatus } from '../auth_strategies/dependencies/auth_status_checker.js';
 
 
 const router = Router();
@@ -35,17 +38,19 @@ router.post('/register', checkSchema(registerUserSchema), async (request, respon
 });
 
 
-router.post('/login', checkSchema(loginUserSchema), async (request, response) => {
-    const result = validationResult(request);
-    if (!result.isEmpty()) {
-        return response.status(400).send({ errors: result.array() });
-    }
-    const data = matchedData(request);
-    console.log('Validated data:', data);
-
-    // Handle user login logic here
+router.post('/login', passport.authenticate('local'), (request, response) => {
+    return response.status(200).send({ message: 'Login successful', user: request.user });
 });
 
 
+router.post('/logout', checkAuthStatus, (request, response) => {
+    request.logout((err) => {
+        if (err) {
+            console.error('Error logging out:', err);
+            return response.status(500).send({ error: 'Internal Server Error' });
+        }
+        return response.status(200).send({ message: 'Logout successful' });
+    });
+});
 
 export default router;

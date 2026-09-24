@@ -5,7 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./src/index.js",
-    "dev": "nodemon ./src/index.js"
+    "dev": "nodemon ./src/index.js",
+    "generate:migration": "drizzle-kit generate",
+    "push:migration": "drizzle-kit migrate"
   },
   "type": "module",
   "keywords": [],

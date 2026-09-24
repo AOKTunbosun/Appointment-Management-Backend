@@ -1,7 +1,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
+import passport from 'passport';
+import session from 'express-session';
 
+import './auth_strategies/local_strategy.js';
 
 import baseRouter from './routes/base_router.js';
 
@@ -11,6 +14,19 @@ const app = express();
 
 
 app.use(express.json());
+app.use(session({
+    secret: process.env.SECRET_KEY,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 1000 * 60 * 60 * 24
+     }
+}));
+
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(morgan('tiny'));
 
