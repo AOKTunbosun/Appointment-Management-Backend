@@ -33,6 +33,14 @@ export const registerUserSchema = {
             errorMessage: 'Email is required',
         },
     },
+    role:{
+        isIn: {
+            options: [['staff', 'customer', 'admin']],
+            errorMessage: 'Role must be either staff, customer, or admin',
+        },notEmpty: {
+            errorMessage: 'Role is required',
+        },
+    },
     password: {
         isString: {
             errorMessage: 'Password must be a string',

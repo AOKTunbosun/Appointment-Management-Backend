@@ -8,6 +8,8 @@ import './auth_strategies/local_strategy.js';
 
 import baseRouter from './routes/base_router.js';
 
+import { redisStore } from './config/redis_session_store.js';
+
 dotenv.config();
 
 const app = express();
@@ -15,6 +17,7 @@ const app = express();
 
 app.use(express.json());
 app.use(session({
+    store: redisStore,
     secret: process.env.SECRET_KEY,
     resave: false,
     saveUninitialized: false,

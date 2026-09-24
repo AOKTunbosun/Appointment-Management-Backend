@@ -6,13 +6,16 @@ import { users } from '../db/schema/users.js';
 import { db } from '../db/index.js';
 import { verifyPassword } from '../utils/hashing.js';
 
+import { getUserByEmail, getUserById } from '../crud/users.js';
+
 passport.serializeUser((user, done) => {
     done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
     try {
-        const [user] = await db.select().from(users).where(eq(users.id, id)).limit(1);
+        // const [user] = await db.select().from(users).where(eq(users.id, id)).limit(1);
+        const user = await getUserById(id);
         if (!user) {
             throw new Error('User not found');
         }
@@ -25,11 +28,11 @@ passport.deserializeUser(async (id, done) => {
 
 passport.use(new LocalStrategy({usernameField: 'email' }, async (email, password, done) => {
     try {
-        const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+        // const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+        const [user] = await getUserByEmail(email);
         if (!user) {
             return done(null, false, { message: 'Invalid email or password' });
         }
-        console.log(user);
 
         const isMatch = await verifyPassword(password, user.password);
         if (!isMatch) {

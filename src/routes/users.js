@@ -11,6 +11,8 @@ import {db} from '../db/index.js';
 
 import { checkAuthStatus } from '../auth_strategies/dependencies/auth_status_checker.js';
 
+import {createUser} from '../crud/users.js';
+
 
 const router = Router();
 
@@ -27,8 +29,7 @@ router.post('/register', checkSchema(registerUserSchema), async (request, respon
     const hashedPassword = await hashPassword(data.password);
     
     try {
-        const newUser = await db.insert(users).values({...data, password: hashedPassword }).returning();
-        console.log('New user saved to the database:', newUser);
+        const newUser = await createUser({...data, password: hashedPassword });
         return response.status(201).send({ user: newUser });
     } catch (err) {
         console.error('Error saving user to the database:', err);
